@@ -179,22 +179,23 @@
       filter: brightness(0.95);
     }
 
+    /* ─────────────── ПЛЕЕР ─────────────── */
     .player {
-      background: rgba(30, 20, 60, 0.09);
-      border: 1px solid rgba(140, 80, 220, 0.14);
+      background: rgba(30, 20, 60, 0.12);
+      border: 1px solid rgba(140, 80, 220, 0.18);
       border-radius: 16px;
-      padding: 14px 18px;
+      padding: 16px 18px;
       backdrop-filter: blur(20px);
       width: 100%;
-      max-width: 420px;
+      max-width: 480px;
     }
 
     .track-title {
-      color: rgba(220, 200, 255, 0.9);
-      font-size: 1.02rem;
+      color: rgba(220, 200, 255, 0.92);
+      font-size: 1.1rem;
       font-weight: 500;
       text-align: center;
-      margin-bottom: 12px;
+      margin-bottom: 14px;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -204,47 +205,49 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 8px;
+      gap: 10px;
     }
 
     .btn {
-      background: rgba(140, 80, 220, 0.12);
+      background: rgba(140, 80, 220, 0.15);
       border: none;
-      color: rgba(200, 180, 255, 0.9);
-      font-size: 1.35rem;
-      width: 40px;
-      height: 40px;
+      color: rgba(220, 190, 255, 0.95);
+      font-size: 1.5rem;
+      width: 48px;
+      height: 48px;
       border-radius: 50%;
       cursor: pointer;
       transition: all 0.22s ease;
       flex-shrink: 0;
+      touch-action: manipulation;
     }
 
     .btn:hover {
-      background: rgba(160, 100, 240, 0.25);
-      color: #fff;
-      transform: scale(1.08);
+      background: rgba(160, 100, 240, 0.3);
+      color: white;
+      transform: scale(1.1);
     }
 
     .btn.play-pause {
-      width: 52px;
-      height: 52px;
-      font-size: 1.6rem;
-      background: rgba(140, 80, 220, 0.18);
+      width: 64px;
+      height: 64px;
+      font-size: 1.9rem;
+      background: rgba(140, 80, 220, 0.24);
     }
 
     .progress-container {
       flex: 1;
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 10px;
+      min-width: 100px;
     }
 
     .progress-bar {
       flex: 1;
-      height: 4px;
-      background: rgba(140, 80, 220, 0.14);
-      border-radius: 2px;
+      height: 6px;
+      background: rgba(140, 80, 220, 0.20);
+      border-radius: 3px;
       overflow: hidden;
       cursor: pointer;
     }
@@ -252,18 +255,19 @@
     .progress-fill {
       height: 100%;
       width: 0%;
-      background: linear-gradient(to right, rgba(180, 120, 255, 0.8), rgba(200, 140, 255, 0.8));
-      border-radius: 2px;
-      transition: width 0.1s linear;
+      background: linear-gradient(to right, #b078ff, #a080ff, #c080ff);
+      border-radius: 3px;
+      transition: width 0.08s linear;
     }
 
     .time {
-      font-size: 0.76rem;
-      color: rgba(180, 160, 240, 0.85);
-      min-width: 36px;
+      font-size: 0.86rem;
+      color: rgba(200, 180, 255, 0.9);
+      min-width: 42px;
       text-align: center;
     }
 
+    /* ─────────────── Остальной контент ─────────────── */
     h1 {
       font-size: clamp(2.8rem, 10vw, 4.8rem);
       text-align: center;
@@ -344,6 +348,7 @@
       font-size: 0.94rem;
     }
 
+    /* Модалки */
     .modal {
       position: fixed;
       inset: 0;
@@ -431,7 +436,7 @@
       font-size: 1.4rem;
     }
 
-    /* Десктопные улучшения (когда экран большой) */
+    /* ─────────────── Адаптив ─────────────── */
     @media (min-width: 721px) {
       .container          { padding: 80px 32px 140px; }
       .card               { padding: 48px 40px; border-radius: 24px; }
@@ -444,15 +449,29 @@
       .askill             { width: 88px; height: 88px; margin-bottom: 16px; }
       .skill b            { font-size: 1.3rem; }
       .player             { max-width: 460px; }
+      .btn                { width: 42px; height: 42px; font-size: 1.35rem; }
+      .btn.play-pause     { width: 54px; height: 54px; font-size: 1.65rem; }
+      .progress-bar       { height: 4px; }
+      .time               { font-size: 0.78rem; min-width: 38px; }
+    }
+
+    @media (max-width: 480px) {
+      .player             { padding: 14px 16px; }
+      .track-title        { font-size: 1.05rem; margin-bottom: 12px; }
+      .btn                { width: 52px; height: 52px; font-size: 1.7rem; }
+      .btn.play-pause     { width: 70px; height: 70px; font-size: 2.1rem; }
+      .progress-bar       { height: 7px; }
+      .progress-container { gap: 12px; }
+      .time               { font-size: 0.9rem; min-width: 46px; }
     }
 
     @media (max-width: 380px) {
       h1                  { font-size: clamp(2.4rem, 11vw, 3.8rem); }
-      .player-main .btn   { width: 38px; height: 38px; font-size: 1.2rem; }
-      .btn.play-pause     { width: 48px; height: 48px; font-size: 1.5rem; }
       .avatar-wrapper     { width: 100px; height: 100px; }
       .avatar             { width: 100px; height: 100px; }
-      .status-pill        { font-size: 0.82rem; padding: 5px 14px; }
+      .player             { padding: 12px 14px; }
+      .btn                { width: 48px; height: 48px; font-size: 1.6rem; }
+      .btn.play-pause     { width: 64px; height: 64px; font-size: 2rem; }
     }
   </style>
 </head>
@@ -556,7 +575,7 @@
     </div>
   </div>
 
-  <!-- Модальные окна -->
+  <!-- Модальные окна (без изменений) -->
   <div id="modal-minecraft" class="modal">
     <div class="modal-content">
       <span class="close-modal">×</span>
@@ -629,11 +648,7 @@
   <script>
     // Фоновое видео
     const backgroundVideos = [
-      "movies/1.mp4",
-      "movies/2.mp4",
-      "movies/3.mp4",
-      "movies/4.mp4",
-      "movies/5.mp4",
+      "movies/1.mp4", "movies/2.mp4", "movies/3.mp4", "movies/4.mp4", "movies/5.mp4"
     ];
     const randomVideo = backgroundVideos[Math.floor(Math.random() * backgroundVideos.length)];
     const videoElement = document.getElementById("bg-video");
@@ -642,9 +657,9 @@
     vidSource.type = "video/mp4";
     videoElement.appendChild(vidSource);
     videoElement.load();
-    videoElement.play().catch(e => console.log("Видео автоплей заблокирован:", e));
+    videoElement.play().catch(e => console.log("Видео заблокировано:", e));
 
-    // Музыкальный плеер
+    // Плеер
     const musicTracks = [
       "music/Dota 2 — ksb music.mp3",
       "music/Ничего и никто — Какая разница.mp3",
@@ -776,9 +791,7 @@
     });
 
     document.addEventListener('keydown', e => {
-      if (e.key === 'Escape') {
-        document.querySelectorAll('.modal.show').forEach(closeModal);
-      }
+      if (e.key === 'Escape') document.querySelectorAll('.modal.show').forEach(closeModal);
     });
 
     async function fetchDiscordStatus() {
@@ -820,7 +833,7 @@
           actText.innerText = 'Не активен';
         }
       } else {
-        actText.innerText = 'Отдыхаю';
+        actText.innerText = 'Отдыхпаю';
       }
     }
 
