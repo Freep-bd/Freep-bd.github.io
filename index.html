@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Учеба</title>
+  <title>BIO</title>
   <style>
     * {
       margin: 0;
@@ -503,7 +503,7 @@
             <div class="player-main">
               <button class="btn skip prev" title="Предыдущий">⏮</button>
 
-              <button class="btn play-pause" id="playPauseBtn">❚❚</button>
+              <button class="btn play-pause" id="playPauseBtn">▶</button>
 
               <div class="progress-container">
                 <span class="time current" id="currentTime">0:00</span>
@@ -633,72 +633,7 @@
   </div>
 
   <script>
-    // Принудительное автовоспроизведение музыки
-    (function forceAutoplay() {
-      // Создаем аудио элемент до всего остального
-      const audio = new Audio();
-      audio.loop = false;
-      audio.volume = 0.7;
-      
-      // Список треков
-      const musicTracks = [
-        "music/Dota 2 — ksb music.mp3",
-        "music/Ничего и никто — Какая разница.mp3",
-        "music/Глупая — Нервы.mp3",
-        "music/Наушники — Ночь. Улица. Фонарь.mp3",
-      ];
-      
-      // Выбираем случайный трек
-      const randomTrack = musicTracks[Math.floor(Math.random() * musicTracks.length)];
-      audio.src = randomTrack;
-      
-      // Пытаемся воспроизвести сразу
-      const playPromise = audio.play();
-      
-      // Обновляем интерфейс когда музыка загрузится
-      if (playPromise !== undefined) {
-        playPromise.then(() => {
-          // Музыка играет
-          document.getElementById('playPauseBtn').textContent = '❚❚';
-          document.getElementById('trackTitle').textContent = randomTrack.split('/').pop().replace(/\.[^/.]+$/, "");
-          
-          // Обновляем время
-          audio.addEventListener('timeupdate', function() {
-            if (!audio.duration) return;
-            const percent = (audio.currentTime / audio.duration) * 100;
-            document.getElementById('progressFill').style.width = percent + '%';
-            document.getElementById('currentTime').textContent = formatTime(audio.currentTime);
-            document.getElementById('duration').textContent = formatTime(audio.duration);
-          });
-          
-          audio.addEventListener('ended', function() {
-            // Следующий трек
-            const currentIndex = musicTracks.indexOf(randomTrack);
-            const nextIndex = (currentIndex + 1) % musicTracks.length;
-            audio.src = musicTracks[nextIndex];
-            audio.play();
-          });
-        }).catch(() => {
-          // Если автовоспроизведение заблокировано - показываем кнопку play
-          document.getElementById('playPauseBtn').textContent = '▶';
-          document.getElementById('trackTitle').textContent = 'Нажмите play';
-        });
-      }
-      
-      // Сохраняем audio в глобальную переменную для других функций
-      window.playerAudio = audio;
-      window.musicTracks = musicTracks;
-    })();
-
-    // Вспомогательная функция для форматирования времени
-    function formatTime(seconds) {
-      if (!seconds || isNaN(seconds)) return "0:00";
-      const min = Math.floor(seconds / 60);
-      const sec = Math.floor(seconds % 60);
-      return `${min}:${sec.toString().padStart(2, '0')}`;
-    }
-
-    // Видео фон
+    // рандом видео
     const backgroundVideos = [
       "movies/1.mp4",
       "movies/2.mp4",
@@ -716,60 +651,95 @@
     videoElement.load();
     videoElement.play().catch(e => console.log("Видео автоплей заблокирован:", e));
 
-    // Управление плеером
-    const playPauseBtn = document.getElementById('playPauseBtn');
-    const prevBtn = document.querySelector('.prev');
-    const nextBtn = document.querySelector('.next');
-    const progressBar = document.getElementById('progressBar');
-    const trackTitle = document.getElementById('trackTitle');
+    // муз плеер
+    const musicTracks = [
+      "music/Dota 2 — ksb music.mp3",
+      "music/Ничего и никто — Какая разница.mp3",
+      "music/Глупая — Нервы.mp3",
+      "music/Наушники — Ночь. Улица. Фонарь.mp3",
+    ];
 
-    playPauseBtn.addEventListener('click', function() {
-      if (!window.playerAudio) return;
-      
-      if (window.playerAudio.paused) {
-        window.playerAudio.play();
+    const trackTitle     = document.getElementById("trackTitle");
+    const playPauseBtn   = document.getElementById("playPauseBtn");
+    const prevBtn        = document.querySelector(".prev");
+    const nextBtn        = document.querySelector(".next");
+    const progressFill   = document.getElementById("progressFill");
+    const currentTimeEl  = document.getElementById("currentTime");
+    const durationEl     = document.getElementById("duration");
+    const progressBar    = document.getElementById("progressBar");
+
+    let currentTrackIndex = 0;
+    const audio = new Audio();
+
+    function formatTime(seconds) {
+      if (!seconds || isNaN(seconds)) return "0:00";
+      const min = Math.floor(seconds / 60);
+      const sec = Math.floor(seconds % 60);
+      return `${min}:${sec.toString().padStart(2, '0')}`;
+    }
+
+    function loadAndPlay(index) {
+      if (index < 0 || index >= musicTracks.length) return;
+      currentTrackIndex = index;
+      const filePath = musicTracks[index];
+      const name = filePath.split('/').pop().replace(/\.[^/.]+$/, "");
+      trackTitle.textContent = name;
+
+      audio.src = filePath;
+      audio.load();
+      audio.play().catch(() => {});
+      playPauseBtn.textContent = '❚❚';
+    }
+
+    function togglePlay() {
+      if (audio.paused) {
+        audio.play();
         playPauseBtn.textContent = '❚❚';
       } else {
-        window.playerAudio.pause();
+        audio.pause();
         playPauseBtn.textContent = '▶';
       }
+    }
+
+    function updateProgress() {
+      if (!audio.duration) return;
+      const percent = (audio.currentTime / audio.duration) * 100;
+      progressFill.style.width = percent + '%';
+      currentTimeEl.textContent = formatTime(audio.currentTime);
+      durationEl.textContent = formatTime(audio.duration);
+    }
+
+    playPauseBtn.addEventListener("click", togglePlay);
+
+    prevBtn.addEventListener("click", () => {
+      currentTrackIndex = (currentTrackIndex - 1 + musicTracks.length) % musicTracks.length;
+      loadAndPlay(currentTrackIndex);
     });
 
-    prevBtn.addEventListener('click', function() {
-      if (!window.playerAudio || !window.musicTracks) return;
-      
-      const currentSrc = window.playerAudio.src.split('/').pop();
-      const currentIndex = window.musicTracks.findIndex(t => t.includes(currentSrc));
-      const prevIndex = (currentIndex - 1 + window.musicTracks.length) % window.musicTracks.length;
-      
-      window.playerAudio.src = window.musicTracks[prevIndex];
-      window.playerAudio.play();
-      playPauseBtn.textContent = '❚❚';
-      trackTitle.textContent = window.musicTracks[prevIndex].split('/').pop().replace(/\.[^/.]+$/, "");
+    nextBtn.addEventListener("click", () => {
+      currentTrackIndex = (currentTrackIndex + 1) % musicTracks.length;
+      loadAndPlay(currentTrackIndex);
     });
 
-    nextBtn.addEventListener('click', function() {
-      if (!window.playerAudio || !window.musicTracks) return;
-      
-      const currentSrc = window.playerAudio.src.split('/').pop();
-      const currentIndex = window.musicTracks.findIndex(t => t.includes(currentSrc));
-      const nextIndex = (currentIndex + 1) % window.musicTracks.length;
-      
-      window.playerAudio.src = window.musicTracks[nextIndex];
-      window.playerAudio.play();
-      playPauseBtn.textContent = '❚❚';
-      trackTitle.textContent = window.musicTracks[nextIndex].split('/').pop().replace(/\.[^/.]+$/, "");
+    audio.addEventListener("timeupdate", updateProgress);
+    audio.addEventListener("ended", () => {
+      currentTrackIndex = (currentTrackIndex + 1) % musicTracks.length;
+      loadAndPlay(currentTrackIndex);
     });
 
-    progressBar.addEventListener('click', function(e) {
-      if (!window.playerAudio || !window.playerAudio.duration) return;
-      
+    progressBar.addEventListener("click", e => {
       const rect = progressBar.getBoundingClientRect();
       const pos = (e.clientX - rect.left) / rect.width;
-      window.playerAudio.currentTime = pos * window.playerAudio.duration;
+      audio.currentTime = pos * audio.duration;
     });
 
-    // Discord статус
+    // рандом музыка
+    if (musicTracks.length > 0) {
+      currentTrackIndex = Math.floor(Math.random() * musicTracks.length);
+      loadAndPlay(currentTrackIndex);
+    }
+
+    // статус
     const DISCORD_USER_ID = '1131880060471754803';
     
     const skillModalMap = {
