@@ -1,0 +1,840 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Учеба</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      background: linear-gradient(145deg, #0a0012 0%, #14001f 100%);
+      color: #f0e8ff;
+      min-height: 100vh;
+    }
+
+    #bg-video {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: -2;
+      filter: brightness(0.45) contrast(1.12) saturate(1.05);
+    }
+
+    .overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.65);
+      z-index: -1;
+    }
+
+    .container {
+      position: relative;
+      z-index: 1;
+      padding: 60px 20px 120px;
+      max-width: 1080px;
+      margin: 0 auto;
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.04);
+      border-radius: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      padding: 40px 36px;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.4);
+    }
+
+    .header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 48px;
+      gap: 32px;
+      flex-wrap: wrap;
+    }
+
+    .avatar-section {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .avatar-wrapper {
+      position: relative;
+      width: 140px;
+      height: 140px;
+    }
+
+    .avatar {
+      width: 140px;
+      height: 140px;
+      border-radius: 32%;
+      border: 2px solid rgba(160, 64, 255, 0.4);
+      object-fit: cover;
+      position: relative;
+      z-index: 2;
+    }
+
+    .avatar-glow {
+      position: absolute;
+      inset: -10px;
+      background: radial-gradient(circle at 30% 30%, rgba(160, 64, 255, 0.4), transparent 70%);
+      border-radius: 40%;
+      z-index: 1;
+      animation: pulseGlow 3s infinite;
+    }
+
+    @keyframes pulseGlow {
+      0%, 100% { opacity: 0.5; transform: scale(1); }
+      50% { opacity: 0.8; transform: scale(1.1); }
+    }
+
+    .status-pill {
+      background: rgba(20, 10, 30, 0.7);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(160, 64, 255, 0.3);
+      border-radius: 40px;
+      padding: 6px 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.9rem;
+      width: fit-content;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #00ff88;
+      box-shadow: 0 0 10px #00ff88;
+    }
+
+    .status-text {
+      color: #e0d0ff;
+    }
+
+    .status-activity {
+      color: #a0a0ff;
+      font-size: 0.85rem;
+      max-width: 150px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .socials-and-player {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 20px;
+    }
+
+    .socials {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      justify-content: flex-end;
+    }
+
+    .social-btn {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(160, 64, 255, 0.3);
+      border-radius: 999px;
+      padding: 8px 20px;
+      color: #e0d0ff;
+      font-weight: 500;
+      font-size: 1rem;
+      text-decoration: none;
+      transition: all 0.28s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .social-btn:hover {
+      background: rgba(160, 64, 255, 0.12);
+      border-color: rgba(192, 96, 255, 0.5);
+      color: #f0e0ff;
+      transform: translateY(-2px);
+    }
+
+    .social-logo {
+      width: 20px;
+      height: 20px;
+      object-fit: contain;
+      filter: brightness(0.9) invert(0.1);
+    }
+
+    /* ПЛЕЕР */
+    .player {
+      background: rgba(30, 20, 60, 0.08);
+      border: 1px solid rgba(140, 80, 220, 0.12);
+      border-radius: 14px;
+      padding: 14px 18px 16px;
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.18);
+      width: 100%;
+      max-width: 460px;
+    }
+
+    .track-title {
+      color: rgba(220, 200, 255, 0.88);
+      font-size: 1.05rem;
+      font-weight: 500;
+      text-align: center;
+      margin-bottom: 14px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      opacity: 0.92;
+    }
+
+    .player-main {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .btn {
+      background: rgba(140, 80, 220, 0.10);
+      border: none;
+      color: rgba(200, 180, 255, 0.85);
+      font-size: 1.4rem;
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      flex-shrink: 0;
+    }
+
+    .btn:hover {
+      background: rgba(160, 100, 240, 0.22);
+      color: #f0e8ff;
+      transform: scale(1.10);
+    }
+
+    .btn.play-pause {
+      width: 54px;
+      height: 54px;
+      font-size: 1.65rem;
+      background: rgba(140, 80, 220, 0.15);
+    }
+
+    .progress-container {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-width: 120px;
+    }
+
+    .progress-bar {
+      flex: 1;
+      height: 4px;
+      background: rgba(140, 80, 220, 0.12);
+      border-radius: 2px;
+      overflow: hidden;
+      cursor: pointer;
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(to right, rgba(180, 120, 255, 0.75), rgba(200, 140, 255, 0.75));
+      border-radius: 2px;
+      transition: width 0.08s linear;
+    }
+
+    .time {
+      font-size: 0.78rem;
+      color: rgba(180, 160, 240, 0.80);
+      min-width: 38px;
+      text-align: center;
+      opacity: 0.88;
+    }
+
+    h1 {
+      font-size: clamp(3.2rem, 8vw, 5rem);
+      text-align: center;
+      margin-bottom: 12px;
+      background: linear-gradient(90deg, #b070ff, #70b0ff);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    .desc {
+      font-size: 1.18rem;
+      line-height: 1.6;
+      text-align: center;
+      opacity: 0.9;
+      margin-bottom: 32px;
+    }
+
+    .tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      justify-content: center;
+      margin-bottom: 48px;
+    }
+
+    .tag {
+      background: rgba(160, 64, 255, 0.1);
+      border: 1px solid rgba(160, 64, 255, 0.25);
+      color: #d0a0ff;
+      padding: 7px 18px;
+      border-radius: 999px;
+      font-size: 0.95rem;
+    }
+
+    .skills {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 20px;
+    }
+
+    .skill {
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 16px;
+      padding: 24px 16px;
+      border: 1px solid rgba(160, 64, 255, 0.15);
+      text-align: center;
+      transition: all 0.25s ease;
+      cursor: pointer;
+    }
+
+    .skill:hover {
+      border-color: rgba(192, 96, 255, 0.4);
+      background: rgba(255, 255, 255, 0.06);
+      transform: scale(1.03) translateY(-4px);
+      box-shadow: 0 12px 32px rgba(160, 64, 255, 0.18);
+    }
+
+    .askill {
+      width: 88px;
+      height: 88px;
+      border-radius: 20%;
+      margin-bottom: 16px;
+      object-fit: contain;
+    }
+
+    .skill b {
+      display: block;
+      font-size: 1.3rem;
+      margin-bottom: 8px;
+      font-weight: 600;
+    }
+
+    .skill small {
+      opacity: 0.8;
+      font-size: 0.96rem;
+    }
+
+    .modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.78);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(10px);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.38s ease-out;
+      display: flex;
+    }
+
+    .modal.show {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    .modal-content {
+      background: rgba(30, 25, 65, 0.96);
+      border: 1px solid rgba(160, 64, 255, 0.38);
+      border-radius: 24px;
+      max-width: 580px;
+      width: 92%;
+      padding: 40px 32px 36px;
+      position: relative;
+      box-shadow: 0 24px 80px rgba(0,0,0,0.65);
+      transform: translateY(60px) scale(0.88);
+      opacity: 0;
+      transition: all 0.44s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .modal.show .modal-content {
+      transform: translateY(0) scale(1);
+      opacity: 1;
+    }
+
+    .modal.closing .modal-content {
+      transform: translateY(40px) scale(0.92);
+      opacity: 0;
+      transition: all 0.36s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .modal.closing {
+      opacity: 0;
+      transition: opacity 0.36s ease-in;
+    }
+
+    .close-modal {
+      position: absolute;
+      top: 20px;
+      right: 24px;
+      font-size: 2.8rem;
+      color: #b080ff;
+      cursor: pointer;
+      transition: all 0.28s ease;
+      line-height: 1;
+    }
+
+    .close-modal:hover {
+      color: #ff80c0;
+      transform: rotate(90deg) scale(1.18);
+    }
+
+    .modal-content h2 {
+      color: #d090ff;
+      margin-bottom: 28px;
+      text-align: center;
+      font-size: 2.2rem;
+      font-weight: 700;
+    }
+
+    .modal-content p {
+      font-size: 1.05rem;
+      line-height: 1.65;
+      margin: 14px 0;
+      opacity: 0.95;
+    }
+
+    .modal-content ul {
+      list-style: none;
+      margin: 20px 0;
+    }
+
+    .modal-content li {
+      margin: 12px 0;
+      padding-left: 22px;
+      position: relative;
+    }
+
+    .modal-content li::before {
+      content: "•";
+      position: absolute;
+      left: 0;
+      color: #90e0ff;
+      font-size: 1.3rem;
+    }
+
+    @media (max-width: 720px) {
+      .header { flex-direction: column; align-items: center; text-align: center; }
+      .avatar-section { margin: 0 auto; }
+      .socials-and-player { align-items: center; width: 100%; margin-top: 24px; }
+      .player { max-width: 100%; }
+      .socials { justify-content: center; }
+    }
+  </style>
+</head>
+<body>
+
+  <video id="bg-video" autoplay loop muted playsinline></video>
+  <div class="overlay"></div>
+
+  <div class="container">
+    <div class="card">
+
+      <div class="header">
+        <div class="avatar-section">
+          <div class="avatar-wrapper">
+            <div class="avatar-glow"></div>
+            <img src="avatar.jpg" alt="avatar" class="avatar">
+          </div>
+          
+          <div class="status-pill" id="discord-status-pill">
+            <span class="status-dot"></span>
+            <span class="status-text" id="discord-username">Freep</span>
+            <span class="status-activity" id="discord-activity-text">⚪ Загрузка...</span>
+          </div>
+        </div>
+
+        <div class="socials-and-player">
+          <div class="socials">
+            <a href="https://github.com/Freep-bd" target="_blank" class="social-btn github">
+              <img src="github.png" alt="GitHub" class="social-logo">
+              GitHub
+            </a>
+            <a href="https://t.me/wimuss" target="_blank" class="social-btn telegram">
+              <img src="telegram.png" alt="Telegram" class="social-logo">
+              Telegram
+            </a>
+            <a href="https://discord.gg/yXdBG6REJh" target="_blank" class="social-btn discord">
+              <img src="discord.png" alt="Discord" class="social-logo">
+              Discord
+            </a>
+            <a href="https://tiktok.com/@joolboxpvp" target="_blank" class="social-btn tiktok">
+              <img src="tiktok.png" alt="TikTok" class="social-logo">
+              TikTok
+            </a>
+          </div>
+
+          <div class="player">
+            <div class="track-title" id="trackTitle">Загрузка...</div>
+
+            <div class="player-main">
+              <button class="btn skip prev" title="Предыдущий">⏮</button>
+
+              <button class="btn play-pause" id="playPauseBtn">▶</button>
+
+              <div class="progress-container">
+                <span class="time current" id="currentTime">0:00</span>
+                <div class="progress-bar" id="progressBar">
+                  <div class="progress-fill" id="progressFill"></div>
+                </div>
+                <span class="time duration" id="duration">0:00</span>
+              </div>
+
+              <button class="btn skip next" title="Следующий">⏭</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <h1>Freep</h1>
+
+      <p class="desc">
+        1+ год создания и поддержки Minecraft-серверов<br>
+        Плагины, скрипты, боты, конфиги, карты, администрирование
+      </p>
+
+      <div class="tags">
+        <span class="tag">Minecraft Tech Admin</span>
+        <span class="tag">Python</span>
+        <span class="tag">API</span>
+        <span class="tag">Java</span>
+      </div>
+
+      <div class="skills">
+        <div class="skill" id="minecraft-skill">
+          <img src="minecraft.png" alt="Minecraft" class="askill">
+          <b>Minecraft</b>
+          <small>серверы · плагины · карты · конфиги</small>
+        </div>
+
+        <div class="skill" id="python-skill">
+          <img src="python.png" alt="Python" class="askill">
+          <b>Python</b>
+          <small>боты · парсеры · автоматизация · API</small>
+        </div>
+
+        <div class="skill" id="api-skill">
+          <img src="api.png" alt="API" class="askill">
+          <b>API & Интеграции</b>
+          <small>платежи · вебхуки · панели · статистика</small>
+        </div>
+
+        <div class="skill" id="java-skill">
+          <img src="java.png" alt="Java" class="askill">
+          <b>Java</b>
+          <small>плагины · механики · БД · оптимизация</small>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Модальные окна -->
+  <div id="modal-minecraft" class="modal">
+    <div class="modal-content">
+      <span class="close-modal">×</span>
+      <h2>Minecraft</h2>
+      <p>Больше года полностью в теме серверов Minecraft</p>
+      <ul>
+        <li>Запускал и поддерживал проекты в соло</li>
+        <li>Создание и оптимизация карт</li>
+        <li>Писал и дорабатывал плагины</li>
+        <li>Сложные конфиги, экономика, ранги, донат</li>
+        <li>Настройка аукционов, квестов, защиты от DDoS</li>
+      </ul>
+      <p style="margin-top:28px; text-align:center; font-weight:500; color:#d0a0ff;">
+        Направление, в котором активно расту
+      </p>
+    </div>
+  </div>
+
+  <div id="modal-python" class="modal">
+    <div class="modal-content">
+      <span class="close-modal">×</span>
+      <h2>Python</h2>
+      <p>Мой основной инструмент, использую почти каждый день</p>
+      <ul>
+        <li>Телеграм-боты любой сложности</li>
+        <li>Парсинг, веб-скрапинг</li>
+        <li>Автоматизация рутинных задач</li>
+        <li>Работа с API и вебхуками</li>
+      </ul>
+      <p style="margin-top:28px; text-align:center; font-weight:500; color:#d0a0ff;">
+        Самый удобный и любимый язык для быстрых решений
+      </p>
+    </div>
+  </div>
+
+  <div id="modal-api" class="modal">
+    <div class="modal-content">
+      <span class="close-modal">×</span>
+      <h2>API & Интеграции</h2>
+      <p>Умею связывать сервисы между собой быстро и надёжно</p>
+      <ul>
+        <li>Платёжные системы и донат</li>
+        <li>Webhook-уведомления</li>
+        <li>Панели управления проектами</li>
+        <li>Сбор и анализ статистики</li>
+      </ul>
+      <p style="margin-top:28px; text-align:center; font-weight:500; color:#d0a0ff;">
+        Стараюсь максимально использовать API везде, где это возможно
+      </p>
+    </div>
+  </div>
+
+  <div id="modal-java" class="modal">
+    <div class="modal-content">
+      <span class="close-modal">×</span>
+      <h2>Java</h2>
+      <p>Пишу плагины и утилиты для личного использования</p>
+      <ul>
+        <li>Кастомные механики и ивенты</li>
+        <li>Античиты и базовая защита</li>
+        <li>Интеграция с базами данных</li>
+        <li>Оптимизация под высокую нагрузку</li>
+      </ul>
+      <p style="margin-top:28px; text-align:center; font-weight:500; color:#d0a0ff;">
+        Получаю настоящее удовольствие от джавы
+      </p>
+    </div>
+  </div>
+
+  <script>
+    // рандом видео
+    const backgroundVideos = [
+      "movies/1.mp4",
+      "movies/2.mp4",
+      "movies/3.mp4",
+      "movies/4.mp4",
+      "movies/5.mp4",
+    ];
+
+    const randomVideo = backgroundVideos[Math.floor(Math.random() * backgroundVideos.length)];
+    const videoElement = document.getElementById("bg-video");
+    const vidSource = document.createElement("source");
+    vidSource.src = randomVideo;
+    vidSource.type = "video/mp4";
+    videoElement.appendChild(vidSource);
+    videoElement.load();
+    videoElement.play().catch(e => console.log("Видео автоплей заблокирован:", e));
+
+    // муз плеер
+    const musicTracks = [
+      "music/Dota 2 — ksb music.mp3",
+      "music/Ничего и никто — Какая разница.mp3",
+      "music/Глупая — Нервы.mp3",
+      "music/Наушники — Ночь. Улица. Фонарь.mp3",
+    ];
+
+    const trackTitle     = document.getElementById("trackTitle");
+    const playPauseBtn   = document.getElementById("playPauseBtn");
+    const prevBtn        = document.querySelector(".prev");
+    const nextBtn        = document.querySelector(".next");
+    const progressFill   = document.getElementById("progressFill");
+    const currentTimeEl  = document.getElementById("currentTime");
+    const durationEl     = document.getElementById("duration");
+    const progressBar    = document.getElementById("progressBar");
+
+    let currentTrackIndex = 0;
+    const audio = new Audio();
+
+    function formatTime(seconds) {
+      if (!seconds || isNaN(seconds)) return "0:00";
+      const min = Math.floor(seconds / 60);
+      const sec = Math.floor(seconds % 60);
+      return `${min}:${sec.toString().padStart(2, '0')}`;
+    }
+
+    function loadAndPlay(index) {
+      if (index < 0 || index >= musicTracks.length) return;
+      currentTrackIndex = index;
+      const filePath = musicTracks[index];
+      const name = filePath.split('/').pop().replace(/\.[^/.]+$/, "");
+      trackTitle.textContent = name;
+
+      audio.src = filePath;
+      audio.load();
+      audio.play().catch(() => {});
+      playPauseBtn.textContent = '❚❚';
+    }
+
+    function togglePlay() {
+      if (audio.paused) {
+        audio.play();
+        playPauseBtn.textContent = '❚❚';
+      } else {
+        audio.pause();
+        playPauseBtn.textContent = '▶';
+      }
+    }
+
+    function updateProgress() {
+      if (!audio.duration) return;
+      const percent = (audio.currentTime / audio.duration) * 100;
+      progressFill.style.width = percent + '%';
+      currentTimeEl.textContent = formatTime(audio.currentTime);
+      durationEl.textContent = formatTime(audio.duration);
+    }
+
+    playPauseBtn.addEventListener("click", togglePlay);
+
+    prevBtn.addEventListener("click", () => {
+      currentTrackIndex = (currentTrackIndex - 1 + musicTracks.length) % musicTracks.length;
+      loadAndPlay(currentTrackIndex);
+    });
+
+    nextBtn.addEventListener("click", () => {
+      currentTrackIndex = (currentTrackIndex + 1) % musicTracks.length;
+      loadAndPlay(currentTrackIndex);
+    });
+
+    audio.addEventListener("timeupdate", updateProgress);
+    audio.addEventListener("ended", () => {
+      currentTrackIndex = (currentTrackIndex + 1) % musicTracks.length;
+      loadAndPlay(currentTrackIndex);
+    });
+
+    progressBar.addEventListener("click", e => {
+      const rect = progressBar.getBoundingClientRect();
+      const pos = (e.clientX - rect.left) / rect.width;
+      audio.currentTime = pos * audio.duration;
+    });
+
+    // рандом музыка
+    if (musicTracks.length > 0) {
+      currentTrackIndex = Math.floor(Math.random() * musicTracks.length);
+      loadAndPlay(currentTrackIndex);
+    }
+
+    // статус
+    const DISCORD_USER_ID = '1131880060471754803';
+    
+    const skillModalMap = {
+      'minecraft-skill': 'modal-minecraft',
+      'python-skill':    'modal-python',
+      'api-skill':       'modal-api',
+      'java-skill':      'modal-java'
+    };
+
+    function openModal(modalId) {
+      const modal = document.getElementById(modalId);
+      if (!modal) return;
+      modal.style.display = 'flex';
+      requestAnimationFrame(() => modal.classList.add('show'));
+    }
+
+    function closeModal(modal) {
+      if (!modal || !modal.classList.contains('show')) return;
+      modal.classList.add('closing');
+      const onEnd = e => {
+        if (e.target === modal && modal.classList.contains('closing')) {
+          modal.classList.remove('show', 'closing');
+          modal.style.display = 'none';
+          modal.removeEventListener('transitionend', onEnd);
+        }
+      };
+      modal.addEventListener('transitionend', onEnd);
+    }
+
+    document.querySelectorAll('.skill').forEach(skill => {
+      skill.addEventListener('click', () => {
+        const modalId = skillModalMap[skill.id];
+        if (modalId) openModal(modalId);
+      });
+    });
+
+    document.querySelectorAll('.modal').forEach(modal => {
+      modal.querySelector('.close-modal').addEventListener('click', () => closeModal(modal));
+      modal.addEventListener('click', e => {
+        if (e.target === modal) closeModal(modal);
+      });
+    });
+
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') {
+        document.querySelectorAll('.modal.show').forEach(closeModal);
+      }
+    });
+
+    async function fetchDiscordStatus() {
+      try {
+        const res = await fetch(`https://api.lanyard.rest/v1/users/${DISCORD_USER_ID}`);
+        const data = await res.json();
+        if (data.success) updateDiscordStatus(data.data);
+      } catch (err) {
+        console.error('Discord status error:', err);
+        document.getElementById('discord-activity-text').innerText = '❌ Ошибка';
+      }
+    }
+
+    function updateDiscordStatus(d) {
+      const dot = document.querySelector('.status-dot');
+      const colors = {
+        online:  '#00ff88',
+        idle:    '#faa61a',
+        dnd:     '#f04747',
+        offline: '#747f8d'
+      };
+      const color = colors[d.discord_status] || '#747f8d';
+      dot.style.background = color;
+      dot.style.boxShadow = `0 0 10px ${color}`;
+
+      document.getElementById('discord-username').innerText = d.discord_user.username;
+
+      const actText = document.getElementById('discord-activity-text');
+      if (d.activities?.length > 0) {
+        const act = d.activities.find(a => a.type === 0) ||
+                    d.activities.find(a => a.type === 2) ||
+                    d.activities.find(a => a.type === 4);
+        if (act) {
+          if (act.type === 0)      actText.innerText = `🎮 ${act.name}`;
+          else if (act.type === 2) actText.innerText = `🎵 ${act.details || 'Spotify'}`;
+          else if (act.type === 4) actText.innerText = `💬 ${act.state || act.name}`;
+          else                     actText.innerText = 'Не активен';
+        } else {
+          actText.innerText = 'Не активен';
+        }
+      } else {
+        actText.innerText = 'Отдыхаю';
+      }
+    }
+
+    fetchDiscordStatus();
+    setInterval(fetchDiscordStatus, 15000);
+  </script>
+
+</body>
+</html>
