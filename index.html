@@ -179,7 +179,6 @@
       filter: brightness(0.95);
     }
 
-    /* ─────────────── ПЛЕЕР ─────────────── */
     .player {
       background: rgba(30, 20, 60, 0.12);
       border: 1px solid rgba(140, 80, 220, 0.18);
@@ -219,7 +218,6 @@
       cursor: pointer;
       transition: all 0.22s ease;
       flex-shrink: 0;
-      touch-action: manipulation;
     }
 
     .btn:hover {
@@ -267,7 +265,6 @@
       text-align: center;
     }
 
-    /* ─────────────── Остальной контент ─────────────── */
     h1 {
       font-size: clamp(2.8rem, 10vw, 4.8rem);
       text-align: center;
@@ -348,13 +345,12 @@
       font-size: 0.94rem;
     }
 
-    /* Модалки */
     .modal {
       position: fixed;
       inset: 0;
       background: rgba(0,0,0,0.82);
       z-index: 1000;
-      display: flex;
+      display: none;
       align-items: center;
       justify-content: center;
       backdrop-filter: blur(10px);
@@ -366,17 +362,19 @@
     .modal.show {
       opacity: 1;
       pointer-events: all;
+      display: flex;
     }
 
     .modal-content {
-      background: rgba(30, 25, 65, 0.97);
-      border: 1px solid rgba(160, 64, 255, 0.36);
+      background: rgba(30, 25, 65, 0.38);
+      border: 1px solid rgba(160, 64, 255, 0.32);
       border-radius: 20px;
       max-width: 540px;
       width: 92%;
       padding: 32px 24px 28px;
       position: relative;
       box-shadow: 0 20px 70px rgba(0,0,0,0.7);
+      backdrop-filter: blur(16px);
       transform: translateY(40px) scale(0.92);
       opacity: 0;
       transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
@@ -436,7 +434,6 @@
       font-size: 1.4rem;
     }
 
-    /* ─────────────── Адаптив ─────────────── */
     @media (min-width: 721px) {
       .container          { padding: 80px 32px 140px; }
       .card               { padding: 48px 40px; border-radius: 24px; }
@@ -532,50 +529,52 @@
         </div>
       </div>
 
-      <h1>Freep</h1>
+      <div class="tab-content" id="about">
+        <h1>Freep</h1>
 
-      <p class="desc">
-        1+ год создания и поддержки Minecraft-серверов<br>
-        Плагины, скрипты, боты, конфиги, карты, администрирование
-      </p>
+        <p class="desc">
+          1+ год создания и поддержки Minecraft-серверов<br>
+          Плагины, скрипты, боты, конфиги, карты, администрирование
+        </p>
 
-      <div class="tags">
-        <span class="tag">Minecraft Tech Admin</span>
-        <span class="tag">Python</span>
-        <span class="tag">API</span>
-        <span class="tag">Java</span>
-      </div>
-
-      <div class="skills">
-        <div class="skill" id="minecraft-skill">
-          <img src="minecraft.png" alt="Minecraft" class="askill">
-          <b>Minecraft</b>
-          <small>серверы · плагины · карты · конфиги</small>
+        <div class="tags">
+          <span class="tag">Minecraft Tech Admin</span>
+          <span class="tag">Python</span>
+          <span class="tag">API</span>
+          <span class="tag">Java</span>
         </div>
 
-        <div class="skill" id="python-skill">
-          <img src="python.png" alt="Python" class="askill">
-          <b>Python</b>
-          <small>боты · парсеры · автоматизация · API</small>
-        </div>
+        <div class="skills">
+          <div class="skill" id="minecraft-skill">
+            <img src="minecraft.png" alt="Minecraft" class="askill">
+            <b>Minecraft</b>
+            <small>серверы · плагины · карты · конфиги</small>
+          </div>
 
-        <div class="skill" id="api-skill">
-          <img src="api.png" alt="API" class="askill">
-          <b>API & Интеграции</b>
-          <small>платежи · вебхуки · панели · статистика</small>
-        </div>
+          <div class="skill" id="python-skill">
+            <img src="python.png" alt="Python" class="askill">
+            <b>Python</b>
+            <small>боты · парсеры · автоматизация · API</small>
+          </div>
 
-        <div class="skill" id="java-skill">
-          <img src="java.png" alt="Java" class="askill">
-          <b>Java</b>
-          <small>плагины · механики · БД · оптимизация</small>
+          <div class="skill" id="api-skill">
+            <img src="api.png" alt="API" class="askill">
+            <b>API & Интеграции</b>
+            <small>платежи · вебхуки · панели · статистика</small>
+          </div>
+
+          <div class="skill" id="java-skill">
+            <img src="java.png" alt="Java" class="askill">
+            <b>Java</b>
+            <small>плагины · механики · БД · оптимизация</small>
+          </div>
         </div>
       </div>
 
     </div>
   </div>
 
-  <!-- Модальные окна (без изменений) -->
+  <!-- Модалки навыков -->
   <div id="modal-minecraft" class="modal">
     <div class="modal-content">
       <span class="close-modal">×</span>
@@ -748,7 +747,7 @@
 
     // Discord статус
     const DISCORD_USER_ID = '1131880060471754803';
-    
+
     const skillModalMap = {
       'minecraft-skill': 'modal-minecraft',
       'python-skill':    'modal-python',
@@ -765,10 +764,11 @@
 
     function closeModal(modal) {
       if (!modal || !modal.classList.contains('show')) return;
+      modal.classList.remove('show');
       modal.classList.add('closing');
       const onEnd = e => {
         if (e.target === modal && modal.classList.contains('closing')) {
-          modal.classList.remove('show', 'closing');
+          modal.classList.remove('closing');
           modal.style.display = 'none';
           modal.removeEventListener('transitionend', onEnd);
         }
@@ -788,10 +788,6 @@
       modal.addEventListener('click', e => {
         if (e.target === modal) closeModal(modal);
       });
-    });
-
-    document.addEventListener('keydown', e => {
-      if (e.key === 'Escape') document.querySelectorAll('.modal.show').forEach(closeModal);
     });
 
     async function fetchDiscordStatus() {
@@ -839,8 +835,22 @@
 
     fetchDiscordStatus();
     setInterval(fetchDiscordStatus, 15000);
+
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') {
+        document.querySelectorAll('.modal.show').forEach(modal => {
+          modal.classList.remove('show');
+          const onEnd = ev => {
+            if (ev.target === modal) {
+              modal.style.display = 'none';
+              modal.removeEventListener('transitionend', onEnd);
+            }
+          };
+          modal.addEventListener('transitionend', onEnd);
+        });
+      }
+    });
   </script>
 
 </body>
 </html>
-
